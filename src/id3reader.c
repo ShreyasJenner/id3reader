@@ -6,9 +6,11 @@
 #include <stdint.h>
 #include <fcntl.h>
 #include <sys/ioctl.h>
+#include <curses.h>
 
 #include "../headers/struct.h"
 #include "../headers/syncint.h"
+#include "../headers/jpeg_writer.h"
 
 #define BYTES_READ(bytes_read) printf("\tBYTES READ:%d\n",bytes_read);
 
@@ -78,27 +80,36 @@ int tag_header(int fd, struct id3v2_header *header) {
 /*
  * Function reads tag data from the frames and displays it
  */
-void frame_read(int fd, struct id3v2_header* header, struct winsize *ws) {
+void frame_read(int fd, struct id3v2_header* header, int max_x) {
     char identifier[4];
     uint32_t frame_size;
     uint16_t flags;
     uint8_t data;
-    int itr, file_pos;
+    int itr, file_pos, ident_itr, image_fd;
     
-    itr = 0;
+    itr = 1;
 
-    // read two frames
-    while(itr++<15) {
-        // print formatting for frame data 
-        print_repeat(ws->ws_col/2, '#');
-        printf("\n");
-        printf("%*s", ws->ws_col/8, "");
-        printf("FRAME %d DATA\n", itr); 
-        print_repeat(ws->ws_col/2, '#');
-        printf("\n");
-
+    // read all existing frames
+    while(itr++) {
         // read identifier bytes
         BYTES_READ((int)read(fd, identifier, 4));
+
+        // check if the 4 bytes are a frame identifier
+        for(ident_itr=0;ident_itr<4;ident_itr++) {
+            // identifier can only have characters A-Z or 0-9
+            if(!(identifier[ident_itr]>='A' && identifier[ident_itr]<='Z') && !(identifier[ident_itr]>='0' && identifier[ident_itr]<='9')) {
+                return ;
+            }
+        }
+
+        // print formatting for frame data 
+        print_repeat(max_x/2, '#');
+        printf("\n");
+        printf("%*s", max_x/8, "");
+        printf("FRAME %d DATA\n", itr); 
+        print_repeat(max_x/2, '#');
+        printf("\n");
+
         printf("Frame ID:%c%c%c%c\n",identifier[0],identifier[1],identifier[2],identifier[3]);
 
         // read frame size bytes
@@ -113,28 +124,44 @@ void frame_read(int fd, struct id3v2_header* header, struct winsize *ws) {
         BYTES_READ((int)read(fd, &flags, 2));
         printf("Flags: 0x%04x\n",flags);
 
-        // set file_pos to 0 
-        file_pos = 0;
-        //lseek(fd, header->tag_size+10, SEEK_SET);
+        // check if image data is next
+        if(!strncmp(identifier, "APIC", 4)) {
+            jpeg_writer(fd, frame_size, "test.jpeg");
+        } else {    // print tag data normally
+            // set file_pos to 0 
+            file_pos = 0;
+            //lseek(fd, header->tag_size+10, SEEK_SET);
 
-        // read frame_size number of bytes and print it
-        while(file_pos++<frame_size) {
-            //BYTES_READ((int)read(fd, &data, 1));
-            // read 25 bytes of frame data
-            read(fd, &data, 1);
-            printf("%c ", data);
+            // read frame_size number of bytes and print it
+            while(file_pos++<frame_size) {
+                //BYTES_READ((int)read(fd, &data, 1));
+                // read 25 bytes of frame data
+                read(fd, &data, 1);
+                printf("%c ", data);
+            }
+            printf("\n");
         }
-        printf("\n");
     }
 }
 
-int main() {
-    int fd;
+int main(int argc, char **argv) {
+    int fd, max_y, max_x;
     struct id3v2_header header;
-    struct winsize ws;
+
+    // check if no argument have been passed
+    if(argc<2) {
+        printf("Missing file name argument\n");
+        exit(1);
+    }
+
+    // check if too many args have been passed
+    if(argc>2) {
+        printf("Too many arguments\n");
+        exit(1);
+    }
 
     // Open the mp3 file
-    fd = open("sample-files/sample2.mp3", O_RDONLY, 0);
+    fd = open(argv[1], O_RDONLY, 0);
 
     // Check if the file is available
     if(fd == -1) {
@@ -143,15 +170,14 @@ int main() {
     }
 
     // Get screen width for nice printing
-    if(ioctl(1, TIOCGWINSZ, &ws)!=0) {
-        printf("IOCTL error\n");
-        exit(1);
-    }
+    initscr();
+    getmaxyx(stdscr, max_y, max_x);
+    endwin();
   
     // print heading for tag details 
-    print_repeat(ws.ws_col, '#');
-    printf("%*s\n",ws.ws_col/2,"TAG READ");
-    print_repeat(ws.ws_col, '#');
+    print_repeat(max_x, '#');
+    printf("%*s\n",max_x/2,"TAG READ");
+    print_repeat(max_x, '#');
 
     // get tag details if it is id3
     if(tag_header(fd, &header)) {
@@ -159,10 +185,10 @@ int main() {
     }
 
     // if the tag is id3 then get the frame data
-    print_repeat(ws.ws_col, '#');
-    printf("%*s\n", ws.ws_col/2,"FRAME READ");
-    print_repeat(ws.ws_col, '#');
-    frame_read(fd, &header, &ws);
+    print_repeat(max_x, '#');
+    printf("%*s\n", max_x/2,"FRAME READ");
+    print_repeat(max_x, '#');
+    frame_read(fd, &header, max_x);
 
     close(fd);
 

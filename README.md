@@ -9,4 +9,5 @@ Project to read the id3 metadata from mp3 files
 - Read tags in id3 metadata
 - Display tags
 - Modify tags
-
+- separate c file to handle jpeg file creation 
+- modularize frame function to handle different tags and store data in structs
