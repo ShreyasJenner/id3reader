@@ -25,4 +25,8 @@ struct id3v2_frame_header {
     int n;
     int p;
 };
+
+struct id3v2_frame {
+};
+
 #endif
