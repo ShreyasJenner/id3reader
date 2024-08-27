@@ -3,7 +3,7 @@
 #include <unistd.h>
 #include <stdint.h>
 
-#include "../headers/jpeg_writer.h" 
+#include "../include/jpeg_writer.h" 
 
 /* 
  * Function identifies the start of the jpeg data and writes it into a file 

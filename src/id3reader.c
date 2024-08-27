@@ -8,9 +8,9 @@
 #include <sys/ioctl.h>
 #include <curses.h>
 
-#include "../headers/struct.h"
-#include "../headers/syncint.h"
-#include "../headers/jpeg_writer.h"
+#include "../include/struct.h"
+#include "../include/syncint.h"
+#include "../include/jpeg_writer.h"
 
 #define BYTES_READ(bytes_read) printf("\tBYTES READ:%d\n",bytes_read);
 
@@ -126,7 +126,7 @@ void frame_read(int fd, struct id3v2_header* header, int max_x) {
 
         // check if image data is next
         if(!strncmp(identifier, "APIC", 4)) {
-            jpeg_writer(fd, frame_size, "test.jpeg");
+            jpeg_writer(fd, frame_size, "data/test.jpeg");
         } else {    // print tag data normally
             // set file_pos to 0 
             file_pos = 0;

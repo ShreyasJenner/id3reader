@@ -5,9 +5,8 @@
  */
 
 #include <stdint.h>
-#include <stdio.h>
 
-#include "../headers/syncint.h"
+#include "../include/syncint.h"
 
 /*
  * Function converts 32bit integer to synchronized safe integer
