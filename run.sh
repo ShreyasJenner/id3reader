@@ -1,3 +1,3 @@
 #!/bin/bash
 
-bin/id3reader data/sample-files/sample3.mp3
+bin/id3reader data/input/sample3.mp3

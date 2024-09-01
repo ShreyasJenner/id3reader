@@ -3,7 +3,7 @@
 
 #include <stdint.h>
 
-int int_to_sync_safe_int(uint32_t number);
+uint32_t int_to_sync_safe_int(uint32_t number);
 
 int sync_safe_int_to_int(uint32_t number);
 

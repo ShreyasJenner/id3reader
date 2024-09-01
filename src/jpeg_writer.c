@@ -9,7 +9,7 @@
  * Function identifies the start of the jpeg data and writes it into a file 
  * Magic bytes are: ff d8 ff e0
  * Return 0 on success
- * Returns non-zero numeber on failure
+ * Returns non-zero number on failure
  */
 int jpeg_writer(int fd, int file_size, char *file_name) {
     // create a int8 array to store the image data

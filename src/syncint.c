@@ -1,7 +1,7 @@
 /*
  * Program implements functions to:
- * 1. Convert 32b ints to sync-safe ints 
- * 2. Convert sync-safe ints to 32b ints 
+ * 1. Convert 32b uints to sync-safe ints 
+ * 2. Convert sync-safe ints to 32b uints 
  */
 
 #include <stdint.h>
@@ -18,7 +18,7 @@
  *  4. right shift number by 7 to remove 7 LSbs
  *  5. goto 1
  */
-int int_to_sync_safe_int(uint32_t number) {
+uint32_t int_to_sync_safe_int(uint32_t number) {
     uint32_t res, copy;
     int count;
 
