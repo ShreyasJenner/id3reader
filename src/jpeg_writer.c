@@ -39,12 +39,12 @@ int jpeg_writer(int fd, int file_size, char *file_name) {
                     if(buff == 0xe0) {
                         // move fd to start of magic bytes
                         lseek(fd, -4, SEEK_CUR);
+                        printf("found jpeg\n");
                         break;
                     }
                 }
             }
         }
-
         printf("%c", buff);
     }
 

@@ -22,10 +22,8 @@ int id3_framecheck(int fd) {
 
     /* check if the 1st 4 bytes can be an id3 frame header id */
     for(i=0;i<4;i++) {
-        if((id[i]>='A' && id[i]<='Z') || (id[i]>='0' && id[i]<='9'))
-            ;
-        else {
-            lseek(fd, -(i+1), SEEK_CUR);
+        if(!(id[i]>='A' && id[i]<='Z') && !(id[i]>='0' && id[i]<='9')) {
+            lseek(fd, -4, SEEK_CUR);
             return 0;
         }
     }
@@ -110,9 +108,45 @@ struct frame_header *get_id3frameheader(int fd) {
     return fhdr;
 }
 
+/*
+ * Function to get number of frames in id3 tag
+ * Assumes that fd is pointing to the start of the first frame
+ * Sets fd to the position it was in when passed to the function
+ */
+int get_id3framecount(int fd) {
+    int i, cntr, pos;
+    uint32_t size;
+    char id[4];
+    struct frame_header *fhdr;
+
+    /* Initialization */
+    cntr = 0;
+    pos = lseek(fd, 0, SEEK_CUR);
+
+
+    /* loop will keep running until frames run out */
+    while(true) {
+        /* get id3 frame header 
+         * if it doesnt exist, then break the loop
+         */
+        fhdr = get_id3frameheader(fd);
+        if(fhdr==NULL)
+            break;
+
+        /* set fd to end of frame */
+        lseek(fd, fhdr->frame_size, SEEK_CUR);
+        cntr++;
+    }
+    
+    /* set fd to original position */
+    lseek(fd, pos, SEEK_SET);
+
+    return cntr++;
+}
+
 
 /*
- * Function prints id3 frame onto the terminal
+ * Function returns a pointer to an id3 frame
  */
 struct frames *get_id3frame(int fd) {
     struct frames *frame;
@@ -132,8 +166,7 @@ struct frames *get_id3frame(int fd) {
     data = malloc(frame->fhdr->frame_size);
     frame->data = data;
 
-    /* read data */
-    printf("%s:%d\n",frame->fhdr->frame_id,frame->fhdr->frame_size);
+    /* read data into frame data field */
     read(fd, frame->data,frame->fhdr->frame_size);
 
     return frame;

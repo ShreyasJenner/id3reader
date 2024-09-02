@@ -109,9 +109,8 @@ void show_id3tagheader(int fd) {
  * The function does not reposition the file descriptor after reading
 */
 struct id3_tag *get_id3tag(int fd) {
-    int err;
+    int err, i;
     struct id3_tag *tag;
-    struct frames *itr;
 
     /* check for id3 tag */
     lseek(fd, 0, SEEK_SET);
@@ -123,29 +122,19 @@ struct id3_tag *get_id3tag(int fd) {
     /* allocate space for tag struct */
     tag = malloc(sizeof(struct id3_tag));
 
-    /* initalize tag */
-    tag->frame_no = 0;
-
     /* get tag header */
     tag->hdr = get_id3tagheader(fd, tag->hdr);
 
-    /* store tag data */
+    /* get number of frames and allocate space for frame struct array */
+    tag->frame_no = get_id3framecount(fd);
+    tag->frame_arr = malloc(sizeof(struct frames *) * tag->frame_no);
+
+    /* calculate tag size */
     tag->size = tag->hdr->size + 10 + (10*tag->hdr->flags[3]);
 
     /* get frames */
-    err = lseek(fd, 0, SEEK_CUR);
-    tag->fms = get_id3frame(fd);
-    itr = tag->fms;
-    while(err<=tag->size && itr!=NULL) {
-        itr->next_frame = get_id3frame(fd);
-        err = lseek(fd, 0, SEEK_CUR);
-        printf("%d:%d\n",err,tag->size);
-        itr = itr->next_frame;
-        if(itr==NULL)
-            printf("null check\n");
-
-        tag->frame_no++;
-    }
+    for(i=0;i<tag->frame_no;i++)
+        tag->frame_arr[i] = get_id3frame(fd);
 
     return tag;
 }

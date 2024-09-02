@@ -9,10 +9,7 @@
 #include <curses.h>
 
 #include "../include/structs.h"
-#include "../include/syncint.h"
-#include "../include/jpeg_writer.h"
 #include "../include/tag_reader.h"
-#include "../include/frame_reader.h"
 #include "../include/free.h"
 
 
@@ -41,20 +38,11 @@ int main(int argc, char **argv) {
         exit(1);
     }
 
-    int code;
-    struct frames *itr;
-    itr = tag->fms;
-    printf("no of frames:%d\n", tag->frame_no);
-    scanf("%d",&code);
-    while(code--) {
-        itr = itr->next_frame;
-        printf("%s\n",itr->fhdr->frame_id);
-    }
+    /* Add driver code here */
+    /* Add driver code here */
 
-    /* temp code */
-    jpeg_writer(fd, itr->fhdr->frame_size, "temp.test");
-    /* temp code */
 
+    /* clean up resources */
     ID3_FREE(tag);
     close(fd);
 

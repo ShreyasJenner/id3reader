@@ -5,16 +5,15 @@
 #include "../include/structs.h"
 
 void ID3_FREE(struct id3_tag *tag) {
-    struct frames *itr, *itr2;
+    int i;
 
-    itr = tag->fms;
-    while(itr!=NULL) {
-        itr2 = itr->next_frame;
-        free(itr->fhdr);
-        free(itr);
-        itr = itr2;
+    for(i=0;i<tag->frame_no;i++) {
+        free(tag->frame_arr[i]->fhdr);
+        free(tag->frame_arr[i]->data);
+        free(tag->frame_arr[i]);
     }
 
+    free(tag->frame_arr);
     free(tag->hdr);
     free(tag);
 }
