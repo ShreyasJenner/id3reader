@@ -15,7 +15,7 @@
  * Function is passed a file descriptor 
  * Checks if file contains id3 tag
  */
-int id3_check(int fd) {
+int id3_tagcheck(int fd) {
     char tag[3];
 
     read(fd, tag, 3);
@@ -115,7 +115,7 @@ struct id3_tag *get_id3tag(int fd) {
 
     /* check for id3 tag */
     lseek(fd, 0, SEEK_SET);
-    err = id3_check(fd);
+    err = id3_tagcheck(fd);
     if(err == 0) {
         return NULL;
     }
@@ -136,15 +136,16 @@ struct id3_tag *get_id3tag(int fd) {
     err = lseek(fd, 0, SEEK_CUR);
     tag->fms = get_id3frame(fd);
     itr = tag->fms;
-    while(err<=tag->size) {
+    while(err<=tag->size && itr!=NULL) {
         itr->next_frame = get_id3frame(fd);
         err = lseek(fd, 0, SEEK_CUR);
         printf("%d:%d\n",err,tag->size);
         itr = itr->next_frame;
+        if(itr==NULL)
+            printf("null check\n");
 
         tag->frame_no++;
     }
-    itr->next_frame = NULL;
 
     return tag;
 }

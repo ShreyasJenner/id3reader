@@ -3,7 +3,7 @@
 
 #include "../include/structs.h"
 
-int id3_check(int fd);
+int id3_tagcheck(int fd);
 
 struct tag_header *get_id3tagheader(int fd, struct tag_header *hdr);
 

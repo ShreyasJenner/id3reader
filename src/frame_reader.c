@@ -10,6 +10,28 @@
 #include "../include/structs.h"
 #include "../include/frame_reader.h"
 
+/*
+ * Check if id3 frame header exists at file descriptor position
+ * function resets fd back to initial position it was in when passed to this function
+ */
+int id3_framecheck(int fd) {
+    int i;
+    char id[4];
+   
+    read(fd, id, 4);
+
+    /* check if the 1st 4 bytes can be an id3 frame header id */
+    for(i=0;i<4;i++) {
+        if((id[i]>='A' && id[i]<='Z') || (id[i]>='0' && id[i]<='9'))
+            ;
+        else {
+            lseek(fd, -(i+1), SEEK_CUR);
+            return 0;
+        }
+    }
+    lseek(fd, -4, SEEK_CUR);
+    return 1;
+}
 
 /*
  * Function prints an id3 frame header information onto terminal
@@ -51,6 +73,9 @@ void show_id3frameheader(int fd) {
  * assumes fd is passed to it with its position at frame header
  */
 struct frame_header *get_id3frameheader(int fd) {
+    /* check if frame exists; return NULL if it doesn't */
+    if(id3_framecheck(fd)==0)
+        return NULL;
 
     char frame_id[4];
     uint32_t size;
@@ -96,14 +121,20 @@ struct frames *get_id3frame(int fd) {
     /* allocate space for frame */
     frame = malloc(sizeof(struct frames));
 
+    /* if frame header is null then return null */
     frame->fhdr = get_id3frameheader(fd);
+    if(frame->fhdr==NULL) {
+        free(frame);
+        return NULL;
+    }
 
     /* allocate space for frame data */
     data = malloc(frame->fhdr->frame_size);
     frame->data = data;
 
     /* read data */
-    read(fd, frame->data,frame->fhdr->frame_size); 
+    printf("%s:%d\n",frame->fhdr->frame_id,frame->fhdr->frame_size);
+    read(fd, frame->data,frame->fhdr->frame_size);
 
     return frame;
 }

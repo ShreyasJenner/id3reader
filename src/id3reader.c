@@ -44,21 +44,16 @@ int main(int argc, char **argv) {
     int code;
     struct frames *itr;
     itr = tag->fms;
-    while(1) {
-        scanf("%d",&code);
-
-        if(code==-1)
-            break;
-
-        itr = tag->fms;
-        while(code--) {
-            itr = itr->next_frame;
-        }
-        for(int i=0;i<itr->fhdr->frame_size;i++) {
-            printf("%c", itr->data[i]);
-        }
-        printf("\n");
+    printf("no of frames:%d\n", tag->frame_no);
+    scanf("%d",&code);
+    while(code--) {
+        itr = itr->next_frame;
+        printf("%s\n",itr->fhdr->frame_id);
     }
+
+    /* temp code */
+    jpeg_writer(fd, itr->fhdr->frame_size, "temp.test");
+    /* temp code */
 
     ID3_FREE(tag);
     close(fd);
