@@ -1,4 +1,5 @@
 #include <endian.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <unistd.h>
 #include <string.h>
@@ -10,6 +11,7 @@
 
 #include "../include/structs.h"
 #include "../include/tag_reader.h"
+#include "../include/frame_reader.h"
 #include "../include/free.h"
 
 
@@ -39,6 +41,67 @@ int main(int argc, char **argv) {
     }
 
     /* Add driver code here */
+    int choice, i;
+    bool flag;
+    printf("Available information:\n");
+    printf("\t1:ID3 header information\n");
+    printf("\t2:Size of ID3 tag\n");
+    printf("\t3:No of ID3 frames\n");
+    printf("\t4:ID3 frame list\n");
+    printf("\t5:ID3 frame header information\n");
+    printf("\t6:Details of ID3 frames\n");
+    printf("\th:Help\n");
+
+    flag = true;
+    while(flag==true) {
+        scanf("%d",&choice);
+        switch (choice) {
+            case 1:
+                show_id3tagheader(tag);
+                break;
+            case 2:
+                printf("%d\n",tag->size);
+                break;
+            case 3:
+                printf("%d\n", tag->frame_no);
+                break;
+            case 4:
+                for(i=0;i<tag->frame_no;i++)
+                    printf("%d:%s\n",i,tag->frame_list[i]);
+                break;
+            case 5:
+                printf("Enter frame number:");
+                scanf("%d",&choice);
+                if(choice<tag->frame_no)
+                    show_id3frameheader(tag->frame_arr[choice]->fhdr);
+                else
+                    printf("Out of range\n");
+                break;
+
+            case 6:
+                printf("Enter frame number:");
+                scanf("%d",&choice);
+                if(choice<tag->frame_no)
+                    printf("%s\n",tag->frame_arr[choice]->data);
+                else
+                    printf("Out of range\n");
+                break;
+
+            case 'h':
+                printf("Available information:\n");
+                printf("\t1:ID3 header information\n");
+                printf("\t2:Size of ID3 tag\n");
+                printf("\t3:No of ID3 frames\n");
+                printf("\t4:ID3 frame list\n");
+                printf("\t5:ID3 frame header information\n");
+                printf("\t6:Details of ID3 frames\n");
+                break;
+
+            default:
+                flag = false;
+                break;
+        }
+    }
     /* Add driver code here */
 
 

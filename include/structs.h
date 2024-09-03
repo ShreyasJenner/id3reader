@@ -63,6 +63,7 @@ struct tag_header {
  * **frame_arr: pointer to array of struct frames
  * size: stores size of entire id3 tag including header
  * frame_no: stores number of frames
+ * **frame_list: stores ids of all frames
  */
 struct id3_tag {
     /* normal data */
@@ -72,6 +73,7 @@ struct id3_tag {
     /* derived data */
     uint32_t size;
     int frame_no;
+    char **frame_list;
 };
 
 #endif

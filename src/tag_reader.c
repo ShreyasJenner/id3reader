@@ -63,42 +63,15 @@ struct tag_header *get_id3tagheader(int fd, struct tag_header *hdr) {
 /*
  * print the id3 tag header onto the terminal
  */
-void show_id3tagheader(int fd) {
-    /* set fd to id3 tag header position */
-    lseek(fd, 0, SEEK_SET);
-
-    char identifier[3];
-    uint8_t version[2];
-    uint8_t flags;
-    uint32_t size;
-
-
-    /* read data from id3 header */
-    read(fd, identifier, 3);
-    read(fd, version, 2);
-    read(fd, &flags, 1);
-    read(fd, &size, 4);
-
-    /*
-     * size is stored in as sync-safe int in big endian but read as 
-     * little endian due to system specifications
-     * convert to big endian and convert from sync-safe int to int
-     * size of tag does not include header so add 10 to the size
-     * size of header is 10 bytes
-     */
-    size = __bswap_constant_32(size);
-    size = sync_safe_int_to_int(size) + 10;
-    
-    
-    /* print the info */
-    printf("Identifier: %s\n",identifier);
-    printf("Major Version: %d\n",version[0]);
-    printf("Revision No: %d\n",version[1]);
-    printf("Unsynchronization: %s\n",(flags&8u)>>7?"True":"False");
-    printf("Extended Header: %s\n",(flags&7u)>>6?"True":"False");
-    printf("Experimental Indicator: %s\n",(flags&6u)>>5?"True":"False");
-    printf("Footer: %s\n",(flags&5u)>>4?"True":"False");
-    printf("Size: %d/%02x\n",size,size);
+void show_id3tagheader(struct id3_tag *tag) {
+    printf("Identifier: %s\n",tag->hdr->identifier);
+    printf("Major Version: %d\n",tag->hdr->major_ver);
+    printf("Revision No: %d\n",tag->hdr->revision_no);
+    printf("Unsynchronization: %s\n",(tag->hdr->flags[0]&8u)>>7?"True":"False");
+    printf("Extended Header: %s\n",(tag->hdr->flags[1]&7u)>>6?"True":"False");
+    printf("Experimental Indicator: %s\n",(tag->hdr->flags[2]&6u)>>5?"True":"False");
+    printf("Footer: %s\n",(tag->hdr->flags[3]&5u)>>4?"True":"False");
+    printf("Size: %d/%02x\n",tag->hdr->size,tag->hdr->size);
 }
 
 
@@ -111,6 +84,7 @@ void show_id3tagheader(int fd) {
 struct id3_tag *get_id3tag(int fd) {
     int err, i;
     struct id3_tag *tag;
+    struct ret_multiple *mult;
 
     /* check for id3 tag */
     lseek(fd, 0, SEEK_SET);
@@ -125,8 +99,9 @@ struct id3_tag *get_id3tag(int fd) {
     /* get tag header */
     tag->hdr = get_id3tagheader(fd, tag->hdr);
 
-    /* get number of frames and allocate space for frame struct array */
+    /* get number of frames and and list of frames */
     tag->frame_no = get_id3framecount(fd);
+    tag->frame_list = get_id3framelist(fd,tag->frame_no);
     tag->frame_arr = malloc(sizeof(struct frames *) * tag->frame_no);
 
     /* calculate tag size */
