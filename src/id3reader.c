@@ -41,8 +41,9 @@ int main(int argc, char **argv) {
     }
 
     /* Add driver code here */
-    int choice, i;
-    bool flag;
+    char choice;
+    int i, chc2;
+    int flag;
     printf("Available information:\n");
     printf("\t1:ID3 header information\n");
     printf("\t2:Size of ID3 tag\n");
@@ -52,41 +53,39 @@ int main(int argc, char **argv) {
     printf("\t6:Details of ID3 frames\n");
     printf("\th:Help\n");
 
-    flag = true;
-    while(flag==true) {
-        scanf("%d",&choice);
-        switch (choice) {
-            case 1:
+    flag = 1;
+    while(flag) {
+        scanf("%c",&choice);
+        switch(choice) {
+            case '1':
                 show_id3tagheader(tag);
                 break;
-            case 2:
-                printf("%d\n",tag->size);
+            case '2':
+                printf("%d/%02x\n",tag->size,tag->size);
                 break;
-            case 3:
+            case '3':
                 printf("%d\n", tag->frame_no);
                 break;
-            case 4:
+            case '4':
                 for(i=0;i<tag->frame_no;i++)
                     printf("%d:%s\n",i,tag->frame_list[i]);
                 break;
-            case 5:
+            case '5':
                 printf("Enter frame number:");
-                scanf("%d",&choice);
-                if(choice<tag->frame_no)
-                    show_id3frameheader(tag->frame_arr[choice]->fhdr);
+                scanf("%d",&chc2);
+                if(chc2<tag->frame_no)
+                    show_id3frameheader(tag->frame_arr[chc2]->fhdr);
                 else
                     printf("Out of range\n");
                 break;
-
-            case 6:
+            case '6':
                 printf("Enter frame number:");
-                scanf("%d",&choice);
-                if(choice<tag->frame_no)
-                    printf("%s\n",tag->frame_arr[choice]->data);
+                scanf("%d",&chc2);
+                if(chc2<tag->frame_no)
+                    printf("%s\n",tag->frame_arr[chc2]->data);
                 else
                     printf("Out of range\n");
                 break;
-
             case 'h':
                 printf("Available information:\n");
                 printf("\t1:ID3 header information\n");
@@ -98,9 +97,10 @@ int main(int argc, char **argv) {
                 break;
 
             default:
-                flag = false;
+                flag = 0;
                 break;
         }
+        getchar();
     }
     /* Add driver code here */
 
