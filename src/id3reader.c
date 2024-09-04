@@ -9,12 +9,7 @@
 #include <sys/ioctl.h>
 #include <curses.h>
 
-#include "../include/structs.h"
-#include "../include/tag_reader.h"
-#include "../include/frame_reader.h"
-#include "../include/free.h"
-
-
+#include "../include/id3reader.h"
 
 int main(int argc, char **argv) {
     int fd, tmp;
