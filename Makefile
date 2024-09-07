@@ -18,10 +18,10 @@ BIN=$(BINDIR)/id3reader
 all: $(BIN)
 
 $(BIN): $(LIB)
-	$(CC) -o $(BIN) $(OBJ)
+	$(CC) example/example.c -o $(BIN) $(OBJ) $(CFLAGS)
 
 $(LIB): $(OBJ) | $(LIBDIR)
-	ar -rcs $@ $<
+	ar -rcs $@ obj/id3reader.o 
 
 $(LIBDIR):
 	mkdir -p $(LIBDIR)
@@ -36,5 +36,9 @@ clean:
 	rm -f $(BIN)
 	rm -f $(LIB)
 	rm -rf $(OBJDIR)/*.o
+
+
+info:
+	$(info SRC=$(SRC))
 
 .PHONY: all clean

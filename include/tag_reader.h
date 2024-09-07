@@ -1,7 +1,7 @@
 #ifndef TAG_READER_H
 #define TAG_READER_H
 
-#include "../include/structs.h"
+#include "structs.h"
 
 int id3_tagcheck(int fd);
 
