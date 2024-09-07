@@ -6,10 +6,10 @@
 #include <string.h>
 #include <stdio.h>
 
-#include "../include/syncint.h"
-#include "../include/structs.h"
-#include "../include/tag_reader.h"
-#include "../include/frame_reader.h"
+#include "syncint.h"
+#include "structs.h"
+#include "tag_reader.h"
+#include "frame_reader.h"
 
 /*
  * Function is passed a file descriptor 
@@ -84,7 +84,6 @@ void show_id3tagheader(struct id3_tag *tag) {
 struct id3_tag *get_id3tag(int fd) {
     int err, i;
     struct id3_tag *tag;
-    struct ret_multiple *mult;
 
     /* check for id3 tag */
     lseek(fd, 0, SEEK_SET);

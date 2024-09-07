@@ -9,12 +9,11 @@
 #include <sys/ioctl.h>
 #include <curses.h>
 
-#include "../include/id3reader.h"
+#include "id3reader.h"
 
 int main(int argc, char **argv) {
-    int fd, tmp;
+    int fd;
     struct id3_tag *tag;
-    struct frames *frame;
 
     if(argc<2) {
         printf("Missing file name argument\n");

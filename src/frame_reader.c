@@ -6,9 +6,9 @@
 #include <stdbool.h>
 #include <string.h>
 
-#include "../include/syncint.h"
-#include "../include/structs.h"
-#include "../include/frame_reader.h"
+#include "syncint.h"
+#include "structs.h"
+#include "frame_reader.h"
 
 
 /*
@@ -39,9 +39,7 @@ int id3_framecheck(int fd) {
  * Sets fd to the position it was in when passed to the function
  */
 int get_id3framecount(int fd) {
-    int i, cntr, pos;
-    uint32_t size;
-    char id[4];
+    int cntr, pos;
     struct frame_header *fhdr;
 
     /* Initialization */
@@ -76,9 +74,9 @@ int get_id3framecount(int fd) {
  * Sets fd to the position it was in when passed to the function
  */
 char **get_id3framelist(int fd, int count) {
-    int i, cntr, pos;
+    int cntr, pos;
     struct frame_header *fhdr;
-    char **frame_list, id[4];
+    char **frame_list;
 
     /* Initialization */
     cntr = 0;

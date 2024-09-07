@@ -1,8 +1,8 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
-#include "../include/free.h"
-#include "../include/structs.h"
+#include "free.h"
+#include "structs.h"
 
 void ID3_FREE(struct id3_tag *tag) {
     int i;
