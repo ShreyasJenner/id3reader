@@ -11,7 +11,7 @@ BINDIR=bin
 # Files
 SRC=$(wildcard $(SRCDIR)/*.c)
 OBJ=$(patsubst $(SRCDIR)/%.c, $(OBJDIR)/%.o, $(SRC))
-LIB=$(LIBDIR)/libid3reader.a
+LIB=$(LIBDIR)/id3reader.a
 BIN=$(BINDIR)/id3reader
 
 # compile objects 
@@ -21,7 +21,7 @@ $(BIN): $(LIB)
 	$(CC) example/example.c -o $(BIN) $(OBJ) $(CFLAGS)
 
 $(LIB): $(OBJ) | $(LIBDIR)
-	ar -rcs $@ obj/id3reader.o 
+	ar -rcs $@ $(OBJ) 
 
 $(LIBDIR):
 	mkdir -p $(LIBDIR)
