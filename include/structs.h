@@ -1,8 +1,7 @@
 #ifndef STRUCT_H
 #define STRUCT_H
 
-#include <stdint.h>
-
+#include "stdheader.h"
 
 /*
  * frame_id: stores id of frame
@@ -10,20 +9,20 @@
  * flags[8]: store status of flags
  */
 struct frame_header {
-    char frame_id[4];
-    int frame_size;
+  char frame_id[4];
+  int frame_size;
 
-    /*
-     * 0: tag alter preservation
-     * 1: frame alter preservation
-     * 2: read only
-     * 3: group frame
-     * 4: compression
-     * 5: encryption
-     * 6: uncsynchronization
-     * 7: data length indicator
-     */
-    bool flags[8];
+  /*
+   * 0: tag alter preservation
+   * 1: frame alter preservation
+   * 2: read only
+   * 3: group frame
+   * 4: compression
+   * 5: encryption
+   * 6: uncsynchronization
+   * 7: data length indicator
+   */
+  bool flags[8];
 };
 
 /*
@@ -31,9 +30,9 @@ struct frame_header {
  * *data: pointer to data stored in frame
  */
 struct frames {
-    struct frame_header *fhdr;
+  struct frame_header *fhdr;
 
-    uint8_t *data;
+  uint8_t *data;
 };
 
 /*
@@ -44,18 +43,18 @@ struct frames {
  * size: stores size of id3 tag - header
  */
 struct tag_header {
-    char identifier[3];
-    uint8_t major_ver;
-    uint8_t revision_no;
+  char identifier[3];
+  uint8_t major_ver;
+  uint8_t revision_no;
 
-    /*
-     * 0 - uncsynchronization
-     * 1 - extended header
-     * 2 - experimental indicator
-     * 3 - footer present
-     */
-    bool flags[4];
-    uint32_t size;
+  /*
+   * 0 - uncsynchronization
+   * 1 - extended header
+   * 2 - experimental indicator
+   * 3 - footer present
+   */
+  bool flags[4];
+  uint32_t size;
 };
 
 /*
@@ -66,14 +65,14 @@ struct tag_header {
  * **frame_list: stores ids of all frames
  */
 struct id3_tag {
-    /* normal data */
-    struct tag_header *hdr;
-    struct frames **frame_arr; 
+  /* normal data */
+  struct tag_header *hdr;
+  struct frames **frame_arr;
 
-    /* derived data */
-    uint32_t size;
-    int frame_no;
-    char **frame_list;
+  /* derived data */
+  uint32_t size;
+  int frame_no;
+  char **frame_list;
 };
 
 #endif

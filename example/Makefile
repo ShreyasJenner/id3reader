@@ -18,7 +18,7 @@ BIN=$(BINDIR)/id3reader
 all: $(BIN)
 
 $(BIN): $(LIB)
-	$(CC) -o $(BIN) $(OBJ) $(CFLAGS)
+	$(CC) example/example.c -o $(BIN) $(OBJ) $(CFLAGS)
 
 $(LIB): $(OBJ) | $(LIBDIR)
 	ar -rcs $@ $(OBJ) 

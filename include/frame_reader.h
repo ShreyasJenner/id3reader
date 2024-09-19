@@ -1,6 +1,9 @@
 #ifndef FRAME_READER_H
 #define FRAME_READER_H
 
+#include "stdheader.h"
+#include "structs.h"
+
 int id3_framecheck(int fd);
 
 void show_id3frameheader(struct frame_header *fhdr);

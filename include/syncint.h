@@ -1,7 +1,7 @@
 #ifndef SYNCINT_H
 #define SYNCINT_H
 
-#include <stdint.h>
+#include "stdheader.h"
 
 uint32_t int_to_sync_safe_int(uint32_t number);
 
