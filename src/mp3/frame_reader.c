@@ -1,6 +1,6 @@
-#include "frame_reader.h"
+#include "mp3/frame_reader.h"
+#include "mp3/structs.h"
 #include "stdheader.h"
-#include "structs.h"
 #include "syncint.h"
 
 /*

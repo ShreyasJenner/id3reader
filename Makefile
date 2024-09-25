@@ -9,7 +9,7 @@ LIBDIR=lib
 BINDIR=bin
 
 # Files
-SRC=$(wildcard $(SRCDIR)/*.c)
+SRC=$(wildcard $(SRCDIR)/*.c) $(wildcard $(SRCDIR)/**/*.c)
 OBJ=$(patsubst $(SRCDIR)/%.c, $(OBJDIR)/%.o, $(SRC))
 LIB=$(LIBDIR)/id3reader.a
 BIN=$(BINDIR)/id3reader

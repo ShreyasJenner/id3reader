@@ -1,10 +1,8 @@
 /*
  * Program implements functions to:
- * 1. Convert 32b uints to sync-safe ints 
- * 2. Convert sync-safe ints to 32b uints 
+ * 1. Convert 32b uints to sync-safe ints
+ * 2. Convert sync-safe ints to 32b uints
  */
-
-#include <stdint.h>
 
 #include "syncint.h"
 
@@ -19,54 +17,54 @@
  *  5. goto 1
  */
 uint32_t int_to_sync_safe_int(uint32_t number) {
-    uint32_t res, copy;
-    int count;
+  uint32_t res, copy;
+  int count;
 
-    // loop should run 4 times
-    count = 3;              
+  // loop should run 4 times
+  count = 3;
 
-    // intialize all bits in res to 0
-    res = 0x0;
+  // intialize all bits in res to 0
+  res = 0x0;
 
-    // loop to convert integer to sync safe integer
-    while(count-->=0) {
-        res = res>>8;
-        copy = (number&0x7f)<<24;
-        res = res|copy;
-        number = number>>7;
-    }
+  // loop to convert integer to sync safe integer
+  while (count-- >= 0) {
+    res = res >> 8;
+    copy = (number & 0x7f) << 24;
+    res = res | copy;
+    number = number >> 7;
+  }
 
-    return res;
+  return res;
 }
 
 /*
- * Function converts sync-safe int to 32bit int 
+ * Function converts sync-safe int to 32bit int
  * MSB                            LSB
  * [31...24][23...16][15...8][7...0]
  *  1. left shift res by 7
- *  2. copy 7 bits number[30:24] 
+ *  2. copy 7 bits number[30:24]
  *  3. or copy with res and store result in res
  *  4. left shift number by 8
  *  5. goto 1
  */
 int sync_safe_int_to_int(uint32_t number) {
-    uint32_t res, copy;
-    int count;
+  uint32_t res, copy;
+  int count;
 
-    // loop should run 4 times
-    count = 3;              
+  // loop should run 4 times
+  count = 3;
 
-    // intialize all bits in res to 0
-    res = 0x0;
+  // intialize all bits in res to 0
+  res = 0x0;
 
-    // loop to convert sync-safe integer to 32b integer
-    while(count-->=0) {
-        res = res<<7;
-        copy = (number&(0x7f<<24))>>24;
-        res = res|copy;
-        number = number<<8;
-    }
-    return res;
+  // loop to convert sync-safe integer to 32b integer
+  while (count-- >= 0) {
+    res = res << 7;
+    copy = (number & (0x7f << 24)) >> 24;
+    res = res | copy;
+    number = number << 8;
+  }
+  return res;
 }
 
 /* Driver Code
