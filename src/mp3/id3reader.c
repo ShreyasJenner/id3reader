@@ -8,6 +8,7 @@
 /*
  * Function is passed a file descriptor
  * Checks if file contains id3 tag
+ * Restores position of file pointer after reading
  */
 int id3_tagcheck(int fd) {
   char tag[3];
@@ -103,6 +104,9 @@ struct id3_tag *get_id3tag(int fd) {
   /* get frames */
   for (i = 0; i < tag->frame_no; i++)
     tag->frame_arr[i] = get_id3frame(fd);
+
+  /* reposition file descriptor */
+  lseek(fd, 0, SEEK_SET);
 
   return tag;
 }

@@ -1,5 +1,6 @@
 #include "jpeg_writer.h"
 #include "stdheader.h"
+#include <stdio.h>
 
 /*
  * Function identifies the start of the jpeg data and writes it into a file
@@ -41,7 +42,6 @@ int jpeg_writer(int fd, int file_size, char *file_name) {
         }
       }
     }
-    printf("%c", buff);
   }
 
   // read the jpeg data into a buffer
@@ -54,6 +54,7 @@ int jpeg_writer(int fd, int file_size, char *file_name) {
     printf("Bytes read != Bytes written\n");
     return -1;
   }
+  printf("jpeg file written to %s\n", file_name);
 
   return 0;
 }

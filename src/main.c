@@ -1,3 +1,4 @@
+#include "jpeg_writer.h"
 #include "mp3/frame_reader.h"
 #include "mp3/id3_free.h"
 #include "mp3/structs.h"
@@ -106,10 +107,13 @@ int main(int argc, char **argv) {
       if (scanf("%d", &choice) != 1) {
         choice = fgetc(stdin);
       }
-      if (choice < tag->frame_no)
+      if (choice < tag->frame_no) {
         printf("%s\n", tag->frame_arr[choice]->data);
-      else
+        jpeg_writer(fd, tag->frame_arr[choice]->fhdr->frame_size,
+                    ".help/output.jpeg");
+      } else {
         printf("Out of range\n");
+      }
       break;
 
     default:
