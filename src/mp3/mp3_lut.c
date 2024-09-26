@@ -6,7 +6,7 @@
  */
 
 #include "mp3/mp3_lut.h"
-#include "mp3/structs.h"
+#include "mp3/id3_structs.h"
 #include "stdheader.h"
 
 /*

@@ -9,7 +9,7 @@
  * flags[8]: store status of flags
  */
 struct frame_header {
-  char frame_id[4];
+  char frame_id[5];
   int frame_size;
 
   /*

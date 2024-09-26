@@ -1,5 +1,5 @@
 #include "mp3/id3_free.h"
-#include "mp3/structs.h"
+#include "mp3/id3_structs.h"
 #include "stdheader.h"
 
 void ID3_FREE(struct id3_tag *tag) {

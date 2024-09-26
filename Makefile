@@ -1,6 +1,6 @@
 # Compiler and flags
 CC=gcc
-CFLAGS=-Wall -Iinclude
+CFLAGS=-Wall -Iinclude -lFLAC
 
 # Directories
 SRCDIR=src
@@ -11,8 +11,8 @@ BINDIR=bin
 # Files
 SRC=$(wildcard $(SRCDIR)/*.c) $(wildcard $(SRCDIR)/**/*.c)
 OBJ=$(patsubst $(SRCDIR)/%.c, $(OBJDIR)/%.o, $(SRC))
-LIB=$(LIBDIR)/id3reader.a
-BIN=$(BINDIR)/id3reader
+LIB=$(LIBDIR)/metadata-reader.a
+BIN=$(BINDIR)/metadata-reader
 
 # compile objects 
 all: $(BIN)
@@ -33,9 +33,9 @@ $(OBJDIR):
 	mkdir -p $(OBJDIR)
 
 clean:
-	rm -f $(BIN)
-	rm -f $(LIB)
-	rm -rf $(OBJDIR)/*.o
+	rm -f $(BINDIR)/*
+	rm -f $(LIBDIR)/*
+	rm -rf $(OBJDIR)/**/*.o
 
 
 info:

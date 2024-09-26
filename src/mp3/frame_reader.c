@@ -1,5 +1,5 @@
 #include "mp3/frame_reader.h"
-#include "mp3/structs.h"
+#include "mp3/id3_structs.h"
 #include "stdheader.h"
 #include "syncint.h"
 
@@ -84,7 +84,7 @@ char **get_id3framelist(int fd, int count) {
       break;
 
     /* allocate space for frame id and store */
-    frame_list[cntr] = (char *)malloc(sizeof(char) * 4);
+    frame_list[cntr] = (char *)malloc(sizeof(fhdr->frame_id));
     strcpy(frame_list[cntr++], fhdr->frame_id);
 
     /* set fd to end of frame */
