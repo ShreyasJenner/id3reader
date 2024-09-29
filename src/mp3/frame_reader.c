@@ -32,7 +32,7 @@ int id3_framecheck(int fd) {
  */
 int get_id3framecount(int fd) {
   int cntr, pos;
-  struct frame_header *fhdr;
+  ID3FrameHeader *hdr;
 
   /* Initialization */
   cntr = 0;
@@ -43,12 +43,12 @@ int get_id3framecount(int fd) {
     /* get id3 frame header
      * if it doesnt exist, then break the loop
      */
-    fhdr = get_id3frameheader(fd);
-    if (fhdr == NULL)
+    hdr = get_id3frameheader(fd);
+    if (hdr == NULL)
       break;
 
     /* set fd to end of frame and increment counter */
-    lseek(fd, fhdr->frame_size, SEEK_CUR);
+    lseek(fd, hdr->frame_size, SEEK_CUR);
     cntr++;
   }
 
@@ -66,7 +66,7 @@ int get_id3framecount(int fd) {
  */
 char **get_id3framelist(int fd, int count) {
   int cntr, pos;
-  struct frame_header *fhdr;
+  ID3FrameHeader *hdr;
   char **frame_list;
 
   /* Initialization */
@@ -79,17 +79,17 @@ char **get_id3framelist(int fd, int count) {
     /* get id3 frame header
      * if it doesnt exist, then break the loop
      */
-    fhdr = get_id3frameheader(fd);
-    if (fhdr == NULL)
+    hdr = get_id3frameheader(fd);
+    if (hdr == NULL)
       break;
 
     /* allocate space for frame id and store */
-    frame_list[cntr] = (char *)malloc(sizeof(fhdr->frame_id));
-    strcpy(frame_list[cntr++], fhdr->frame_id);
+    frame_list[cntr] = (char *)malloc(sizeof(hdr->frame_id));
+    strcpy(frame_list[cntr++], hdr->frame_id);
 
     /* set fd to end of frame */
-    lseek(fd, fhdr->frame_size, SEEK_CUR);
-    free(fhdr);
+    lseek(fd, hdr->frame_size, SEEK_CUR);
+    free(hdr);
   }
 
   /* set fd to original position */
@@ -102,28 +102,26 @@ char **get_id3framelist(int fd, int count) {
 /*
  * Function prints an id3 frame header information onto terminal
  */
-void show_id3frameheader(struct frame_header *fhdr) {
-  printf("Frame ID: %s\n", fhdr->frame_id);
-  printf("Frame Size: %d\n", fhdr->frame_size);
+void show_id3frameheader(ID3FrameHeader *hdr) {
+  printf("Frame ID: %s\n", hdr->frame_id);
+  printf("Frame Size: %d\n", hdr->frame_size);
   printf("Tag alter preservation: %s\n",
-         fhdr->flags[0] & 64u >> 6 ? "Discard" : "Preserve");
+         hdr->flags[0] & 64u >> 6 ? "Discard" : "Preserve");
   printf("File alter preservation: %s\n",
-         fhdr->flags[0] & 32u >> 5 ? "Discard" : "Preserve");
-  printf("Read Only: %s\n", fhdr->flags[0] & 16u >> 4 ? "True" : "False");
-  printf("Group Frame: %s\n", fhdr->flags[1] & 64u >> 6 ? "True" : "False");
-  printf("Compression: %s\n", fhdr->flags[1] & 8u >> 3 ? "True" : "False");
-  printf("Encryption: %s\n", fhdr->flags[1] & 4u >> 2 ? "True" : "False");
-  printf("Unsynchronization: %s\n",
-         fhdr->flags[1] & 2u >> 1 ? "True" : "False");
-  printf("Data length indicator: %s\n",
-         fhdr->flags[1] & 1u >> 0 ? "Yes" : "No");
+         hdr->flags[0] & 32u >> 5 ? "Discard" : "Preserve");
+  printf("Read Only: %s\n", hdr->flags[0] & 16u >> 4 ? "True" : "False");
+  printf("Group Frame: %s\n", hdr->flags[1] & 64u >> 6 ? "True" : "False");
+  printf("Compression: %s\n", hdr->flags[1] & 8u >> 3 ? "True" : "False");
+  printf("Encryption: %s\n", hdr->flags[1] & 4u >> 2 ? "True" : "False");
+  printf("Unsynchronization: %s\n", hdr->flags[1] & 2u >> 1 ? "True" : "False");
+  printf("Data length indicator: %s\n", hdr->flags[1] & 1u >> 0 ? "Yes" : "No");
 }
 
 /*
  * Function stores id3 frame header into a struct and returns it
  * assumes fd is passed to it with its position at frame header
  */
-struct frame_header *get_id3frameheader(int fd) {
+ID3FrameHeader *get_id3frameheader(int fd) {
   /* check if frame exists; return NULL if it doesn't */
   if (id3_framecheck(fd) == 0)
     return NULL;
@@ -131,10 +129,10 @@ struct frame_header *get_id3frameheader(int fd) {
   char frame_id[4];
   uint32_t size;
   uint8_t flags[2];
-  struct frame_header *fhdr;
+  ID3FrameHeader *hdr;
 
   /* allocate space for struct */
-  fhdr = malloc(sizeof(struct frame_header));
+  hdr = malloc(sizeof(ID3FrameHeader));
 
   /* read 10 bytes from file */
   read(fd, frame_id, 4);
@@ -145,43 +143,43 @@ struct frame_header *get_id3frameheader(int fd) {
   size = __bswap_constant_32(size);
 
   /* print data */
-  strcpy(fhdr->frame_id, frame_id);
-  fhdr->frame_size = sync_safe_int_to_int(size);
-  fhdr->flags[0] = flags[0] & 64u >> 6;
-  fhdr->flags[1] = flags[0] & 32u >> 5;
-  fhdr->flags[2] = flags[0] & 16u >> 4;
-  fhdr->flags[3] = flags[1] & 64u >> 6;
-  fhdr->flags[4] = flags[1] & 8u >> 3;
-  fhdr->flags[5] = flags[1] & 4u >> 2;
-  fhdr->flags[6] = flags[1] & 2u >> 1;
-  fhdr->flags[7] = flags[1] & 1u >> 0;
+  strcpy(hdr->frame_id, frame_id);
+  hdr->frame_size = sync_safe_int_to_int(size);
+  hdr->flags[0] = flags[0] & 64u >> 6;
+  hdr->flags[1] = flags[0] & 32u >> 5;
+  hdr->flags[2] = flags[0] & 16u >> 4;
+  hdr->flags[3] = flags[1] & 64u >> 6;
+  hdr->flags[4] = flags[1] & 8u >> 3;
+  hdr->flags[5] = flags[1] & 4u >> 2;
+  hdr->flags[6] = flags[1] & 2u >> 1;
+  hdr->flags[7] = flags[1] & 1u >> 0;
 
-  return fhdr;
+  return hdr;
 }
 
 /*
  * Function returns a pointer to an id3 frame
  */
-struct frames *get_id3frame(int fd) {
-  struct frames *frame;
+ID3Frame *get_id3frame(int fd) {
+  ID3Frame *frame;
   uint8_t *data;
 
   /* allocate space for frame */
-  frame = malloc(sizeof(struct frames));
+  frame = malloc(sizeof(ID3Frame));
 
   /* if frame header is null then return null */
-  frame->fhdr = get_id3frameheader(fd);
-  if (frame->fhdr == NULL) {
+  frame->hdr = get_id3frameheader(fd);
+  if (frame->hdr == NULL) {
     free(frame);
     return NULL;
   }
 
   /* allocate space for frame data */
-  data = malloc(frame->fhdr->frame_size);
+  data = malloc(frame->hdr->frame_size);
   frame->data = data;
 
   /* read data into frame data field */
-  read(fd, frame->data, frame->fhdr->frame_size);
+  read(fd, frame->data, frame->hdr->frame_size);
 
   return frame;
 }

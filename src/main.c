@@ -6,7 +6,6 @@
 #include "mp3/id3reader.h"
 #include "stdheader.h"
 #include "syncint.h"
-#include <stdio.h>
 
 /* Driver Tag */
 int main(int argc, char **argv) {

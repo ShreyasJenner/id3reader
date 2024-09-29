@@ -146,68 +146,67 @@ void show_mp3FrameHeader(uint8_t *bytes) {
  * the header of an mp3 frame
  * It returns a struct containing info about the frame
  */
-// int get_mp3FrameHeader(uint8_t *bytes, struct mp3_frame_header_data *mfhd) {
-//   /* verify if mp3 header exists */
-//   if (!verify_mp3Header(bytes)) {
-//     printf("invalid mp3 frame header\n");
-//     return -1;
-//   }
-//
-//   /* Declaration */
-//   float v_id;
-//   int mp3_layer;
-//   bool crc;
-//   int bitrate;
-//   int samp_rate;
-//   bool pad;
-//   char *chan;
-//   bool copyrit;
-//   bool orig;
-//   char *emph;
-//
-//   /* get mp3 frame data from lookup tables */
-//   v_id = mpeg_version_id[(bytes[1] & 24u) >> 3];
-//   mp3_layer = layer[(bytes[1] & 6u) >> 1];
-//   crc = crc_protection[(bytes[1] & 1u) >> 0];
-//   bitrate = bitrate_index[((bytes[1] & 24u) >> 3) - 2]
-//                          [((bytes[1] & 6u) >> 1) - 1][(bytes[2] & 240u) >>
-//                          4];
-//   samp_rate = sampling_rate[(bytes[1] & 24u) >> 3][(bytes[2] & 12u) >> 2];
-//   pad = padding[(bytes[2] & 2u) >> 1];
-//   chan = (char *)channel_mode[(bytes[3] & 192u) >> 6];
-//   copyrit = copyright[(bytes[3] & 8u) >> 3];
-//   orig = original[(bytes[3] & 4u) >> 2];
-//   emph = (char *)emphasis[(bytes[3] & 2u) >> 0];
-//
-//   /* allocate space for struct and store data */
-//   mfhd->v_id = v_id;
-//   mfhd->layer = mp3_layer;
-//   mfhd->crc = crc;
-//   mfhd->bitrate = bitrate;
-//   mfhd->samplerate = samp_rate;
-//   mfhd->padding = pad;
-//   strcpy(mfhd->channel, chan);
-//   mfhd->copyright = copyrit;
-//   mfhd->original = orig;
-//   strcpy(mfhd->emphasis, emph);
-//
-//   /* store derived data */
-//   if (mfhd->layer == 3 || mfhd->layer == 2) {
-//     mfhd->frame_size = 1152;
-//     mfhd->frame_length =
-//         144 * mfhd->bitrate * 1000 / mfhd->samplerate + mfhd->padding;
-//   } else if (mfhd->layer == 1) {
-//     mfhd->frame_size = 384;
-//     mfhd->frame_length =
-//         (12 * mfhd->bitrate * 1000 / mfhd->samplerate + (4 * mfhd->padding))
-//         * 4;
-//   }
-//
-//   if (!strcmp(chan, "stereo") || !strcmp(chan, "joint(stereo)") ||
-//       !strcmp(chan, "dual(stereo)"))
-//     mfhd->channel_no = 2;
-//   else
-//     mfhd->channel_no = 1;
-//
-//   return 1;
-// }
+int get_mp3FrameHeader(uint8_t *bytes, MP3FrameHeader *mfhd) {
+  /* verify if mp3 header exists */
+  if (!verify_mp3Header(bytes)) {
+    printf("invalid mp3 frame header\n");
+    return -1;
+  }
+
+  /* Declaration */
+  float v_id;
+  int mp3_layer;
+  bool crc;
+  int bitrate;
+  int samp_rate;
+  bool pad;
+  char *chan;
+  bool copyrit;
+  bool orig;
+  char *emph;
+
+  /* get mp3 frame data from lookup tables */
+  v_id = mpeg_version_id[(bytes[1] & 24u) >> 3];
+  mp3_layer = layer[(bytes[1] & 6u) >> 1];
+  crc = crc_protection[(bytes[1] & 1u) >> 0];
+  bitrate = bitrate_index[((bytes[1] & 24u) >> 3) - 2]
+                         [((bytes[1] & 6u) >> 1) - 1][(bytes[2] & 240u) >> 4];
+  samp_rate = sampling_rate[(bytes[1] & 24u) >> 3][(bytes[2] & 12u) >> 2];
+  pad = padding[(bytes[2] & 2u) >> 1];
+  chan = (char *)channel_mode[(bytes[3] & 192u) >> 6];
+  copyrit = copyright[(bytes[3] & 8u) >> 3];
+  orig = original[(bytes[3] & 4u) >> 2];
+  emph = (char *)emphasis[(bytes[3] & 2u) >> 0];
+
+  /* allocate space for struct and store data */
+  mfhd->v_id = v_id;
+  mfhd->layer = mp3_layer;
+  mfhd->crc = crc;
+  mfhd->bitrate = bitrate;
+  mfhd->samplerate = samp_rate;
+  mfhd->padding = pad;
+  strcpy(mfhd->channel, chan);
+  mfhd->copyright = copyrit;
+  mfhd->original = orig;
+  strcpy(mfhd->emphasis, emph);
+
+  /* store derived data */
+  if (mfhd->layer == 3 || mfhd->layer == 2) {
+    mfhd->frame_size = 1152;
+    mfhd->frame_length =
+        144 * mfhd->bitrate * 1000 / mfhd->samplerate + mfhd->padding;
+  } else if (mfhd->layer == 1) {
+    mfhd->frame_size = 384;
+    mfhd->frame_length =
+        (12 * mfhd->bitrate * 1000 / mfhd->samplerate + (4 * mfhd->padding)) *
+        4;
+  }
+
+  if (!strcmp(chan, "stereo") || !strcmp(chan, "joint(stereo)") ||
+      !strcmp(chan, "dual(stereo)"))
+    mfhd->channel_no = 2;
+  else
+    mfhd->channel_no = 1;
+
+  return 1;
+}

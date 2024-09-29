@@ -32,14 +32,14 @@ int id3_tagcheck(char *filename) {
 /*
  * Function gets id3 tag header info and stores in struct
  */
-struct tag_header *get_id3tagheader(int fd, struct tag_header *hdr) {
+ID3TagHeader *get_id3tagheader(int fd, ID3TagHeader *hdr) {
   char identifier[3];
   uint8_t version[2];
   uint8_t flags;
   uint32_t size;
 
   /* allocate space for tag header */
-  hdr = malloc(sizeof(struct tag_header));
+  hdr = malloc(sizeof(ID3TagHeader));
 
   /* read data from id3 header */
   read(fd, identifier, 3);
@@ -52,8 +52,8 @@ struct tag_header *get_id3tagheader(int fd, struct tag_header *hdr) {
 
   /* fill struct */
   strcpy(hdr->identifier, identifier);
-  hdr->major_ver = version[0];
-  hdr->revision_no = version[1];
+  hdr->version[0] = version[0];
+  hdr->version[1] = version[1];
   hdr->flags[0] = (flags & 8u) >> 7;
   hdr->flags[1] = (flags & 7u) >> 6;
   hdr->flags[2] = (flags & 6u) >> 5;
@@ -66,10 +66,10 @@ struct tag_header *get_id3tagheader(int fd, struct tag_header *hdr) {
 /*
  * print the id3 tag header onto the terminal
  */
-void show_id3tagheader(struct id3_tag *tag) {
+void show_id3tagheader(ID3Tag *tag) {
   printf("Identifier: %s\n", tag->hdr->identifier);
-  printf("Major Version: %d\n", tag->hdr->major_ver);
-  printf("Revision No: %d\n", tag->hdr->revision_no);
+  printf("Major Version: %d\n", tag->hdr->version[0]);
+  printf("Revision No: %d\n", tag->hdr->version[1]);
   printf("Unsynchronization: %s\n",
          (tag->hdr->flags[0] & 8u) >> 7 ? "True" : "False");
   printf("Extended Header: %s\n",
@@ -86,9 +86,9 @@ void show_id3tagheader(struct id3_tag *tag) {
  * Return NULL if no id3 tag
  * The function does not reposition the file descriptor after reading
  */
-struct id3_tag *get_id3tag(char *filename) {
+ID3Tag *get_id3tag(char *filename) {
   int err, i, fd;
-  struct id3_tag *tag;
+  ID3Tag *tag;
 
   /* check for id3 tag */
   err = id3_tagcheck(filename);
@@ -104,7 +104,7 @@ struct id3_tag *get_id3tag(char *filename) {
   }
 
   /* allocate space for tag struct */
-  tag = malloc(sizeof(struct id3_tag));
+  tag = malloc(sizeof(ID3Tag));
 
   /* get tag header */
   tag->hdr = get_id3tagheader(fd, tag->hdr);
@@ -112,7 +112,7 @@ struct id3_tag *get_id3tag(char *filename) {
   /* get number of frames and and list of frames */
   tag->frame_no = get_id3framecount(fd);
   tag->frame_list = get_id3framelist(fd, tag->frame_no);
-  tag->frame_arr = malloc(sizeof(struct frames *) * tag->frame_no);
+  tag->frame_arr = malloc(sizeof(ID3Frame *) * tag->frame_no);
 
   /* calculate tag size */
   tag->size = tag->hdr->size + 10 + (10 * tag->hdr->flags[3]);
@@ -131,7 +131,7 @@ struct id3_tag *get_id3tag(char *filename) {
 void id3_View(char *filename) {
   /* Declaration */
   int choice, i, flag;
-  struct id3_tag *tag;
+  ID3Tag *tag;
 
   /* get the id3 tag and store it */
   tag = get_id3tag(filename);
@@ -180,7 +180,7 @@ void id3_View(char *filename) {
       }
 
       if (choice < tag->frame_no)
-        show_id3frameheader(tag->frame_arr[choice]->fhdr);
+        show_id3frameheader(tag->frame_arr[choice]->hdr);
       else
         printf("Out of range\n");
       break;
@@ -191,8 +191,8 @@ void id3_View(char *filename) {
       }
       if (choice < tag->frame_no) {
         /* check if current tag stores jpeg data */
-        if (!strcmp(tag->frame_arr[choice]->fhdr->frame_id, "APIC")) {
-          jpeg_writer(filename, tag->frame_arr[choice]->fhdr->frame_size,
+        if (!strcmp(tag->frame_arr[choice]->hdr->frame_id, "APIC")) {
+          jpeg_writer(filename, tag->frame_arr[choice]->hdr->frame_size,
                       ".help/output.jpeg");
         } else {
           printf("%s\n", tag->frame_arr[choice]->data);
