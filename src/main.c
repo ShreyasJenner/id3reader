@@ -1,5 +1,5 @@
 #include "flac/read_flac_metadata.h"
-#include "jpeg_writer.h"
+#include "images/jpeg.h"
 #include "mp3/frame_reader.h"
 #include "mp3/id3_free.h"
 #include "mp3/id3_structs.h"

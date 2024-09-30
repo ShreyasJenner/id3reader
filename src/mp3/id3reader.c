@@ -1,5 +1,5 @@
 #include "mp3/id3reader.h"
-#include "jpeg_writer.h"
+#include "images/jpeg.h"
 #include "mp3/frame_reader.h"
 #include "mp3/id3_free.h"
 #include "mp3/id3_structs.h"
@@ -191,12 +191,8 @@ void id3_View(char *filename) {
       }
       if (choice < tag->frame_no) {
         /* check if current tag stores jpeg data */
-        if (!strcmp(tag->frame_arr[choice]->hdr->frame_id, "APIC")) {
-          jpeg_writer(filename, tag->frame_arr[choice]->hdr->frame_size,
-                      ".help/output.jpeg");
-        } else {
-          printf("%s\n", tag->frame_arr[choice]->data);
-        }
+        jpeg_writer(tag->frame_arr[choice]->data,
+                    tag->frame_arr[choice]->hdr->frame_size);
       } else {
         printf("Out of range\n");
       }
