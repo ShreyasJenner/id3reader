@@ -88,6 +88,77 @@ void store_FLACMetadata(FLACMetadata *metadata, FLAC__MetadataType metatype,
   }
 }
 
+FLACMetadata *get_FLACMetadata(char *filename) {
+  /* Declaration */
+  FLACMetadata *metadata;
+
+  FLAC__Metadata_SimpleIterator *itr;
+  FLAC__MetadataType metatype;
+  FLAC__StreamMetadata *streammetadata;
+
+  itr = FLAC__metadata_simple_iterator_new();
+  if (itr == NULL) {
+    fprintf(stderr, "Error creating flac metadata iterator\n");
+    return NULL;
+  }
+
+  /* allocate space ofr flac metadata */
+  metadata = allocate_FLACMetadataSpace();
+  if (metadata == NULL) {
+    fprintf(stderr, "Error -> allocate_FLACMetadataSpace");
+    return NULL;
+  }
+
+  /* open the flac file */
+  if (FLAC__metadata_simple_iterator_init(itr, filename, true, false) ==
+      false) {
+    fprintf(stderr, "Error creating flac metadata iterator\n");
+    return NULL;
+  }
+
+  /* Store the flac data into the FLACMetadata struct */
+  do {
+    /* get the metatype and stream metadata and allocate it to correct memeber
+     */
+    metatype = FLAC__metadata_simple_iterator_get_block_type(itr);
+    streammetadata = FLAC__metadata_simple_iterator_get_block(itr);
+    store_FLACMetadata(metadata, metatype, streammetadata);
+  } while (FLAC__metadata_simple_iterator_next(itr));
+
+  /* close iterator */
+  FLAC__metadata_simple_iterator_delete(itr);
+
+  return metadata;
+}
+
+void clean_FLACMetadata(FLACMetadata *metadata) {
+  if (metadata->picture != NULL) {
+    FLAC__metadata_object_delete(metadata->picture);
+  }
+  if (metadata->cue_sheet != NULL) {
+    FLAC__metadata_object_delete(metadata->cue_sheet);
+  }
+  if (metadata->vorbis_comment != NULL) {
+    FLAC__metadata_object_delete(metadata->vorbis_comment);
+  }
+  if (metadata->seektable != NULL) {
+    FLAC__metadata_object_delete(metadata->seektable);
+  }
+  if (metadata->app != NULL) {
+    FLAC__metadata_object_delete(metadata->app);
+  }
+  if (metadata->padding != NULL) {
+    FLAC__metadata_object_delete(metadata->padding);
+  }
+  if (metadata->streaminfo != NULL) {
+    FLAC__metadata_object_delete(metadata->streaminfo);
+  }
+
+  free(metadata);
+}
+
+/* Function to view flac metadata in file
+ * Handles creation and destruction of metadata */
 void view_FLACMetadata(char *filename) {
   /* Declaration */
   int ch, flag;
@@ -291,73 +362,4 @@ void view_FLACMetadata(char *filename) {
 
   /* delete the block */
   clean_FLACMetadata(metadata);
-}
-
-FLACMetadata *get_FLACMetadata(char *filename) {
-  /* Declaration */
-  FLACMetadata *metadata;
-
-  FLAC__Metadata_SimpleIterator *itr;
-  FLAC__MetadataType metatype;
-  FLAC__StreamMetadata *streammetadata;
-
-  itr = FLAC__metadata_simple_iterator_new();
-  if (itr == NULL) {
-    fprintf(stderr, "Error creating flac metadata iterator\n");
-    return NULL;
-  }
-
-  /* allocate space ofr flac metadata */
-  metadata = allocate_FLACMetadataSpace();
-  if (metadata == NULL) {
-    fprintf(stderr, "Error -> allocate_FLACMetadataSpace");
-    return NULL;
-  }
-
-  /* open the flac file */
-  if (FLAC__metadata_simple_iterator_init(itr, filename, true, false) ==
-      false) {
-    fprintf(stderr, "Error creating flac metadata iterator\n");
-    return NULL;
-  }
-
-  /* Store the flac data into the FLACMetadata struct */
-  do {
-    /* get the metatype and stream metadata and allocate it to correct memeber
-     */
-    metatype = FLAC__metadata_simple_iterator_get_block_type(itr);
-    streammetadata = FLAC__metadata_simple_iterator_get_block(itr);
-    store_FLACMetadata(metadata, metatype, streammetadata);
-  } while (FLAC__metadata_simple_iterator_next(itr));
-
-  /* close iterator */
-  FLAC__metadata_simple_iterator_delete(itr);
-
-  return metadata;
-}
-
-void clean_FLACMetadata(FLACMetadata *metadata) {
-  if (metadata->picture != NULL) {
-    FLAC__metadata_object_delete(metadata->picture);
-  }
-  if (metadata->cue_sheet != NULL) {
-    FLAC__metadata_object_delete(metadata->cue_sheet);
-  }
-  if (metadata->vorbis_comment != NULL) {
-    FLAC__metadata_object_delete(metadata->vorbis_comment);
-  }
-  if (metadata->seektable != NULL) {
-    FLAC__metadata_object_delete(metadata->seektable);
-  }
-  if (metadata->app != NULL) {
-    FLAC__metadata_object_delete(metadata->app);
-  }
-  if (metadata->padding != NULL) {
-    FLAC__metadata_object_delete(metadata->padding);
-  }
-  if (metadata->streaminfo != NULL) {
-    FLAC__metadata_object_delete(metadata->streaminfo);
-  }
-
-  free(metadata);
 }
