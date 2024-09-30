@@ -27,13 +27,9 @@ int check_JPEG(uint8_t *data, int buffer_size) {
 int jpeg_writer(uint8_t *data, int buff_size) {
   /* Declaration */
   int fd, jpeg_pos;
-  char *image_filename;
-
-  /* Initialization */
-  image_filename = "/tmp/output.jpeg";
 
   // open fd for writing image file
-  fd = open(image_filename, O_WRONLY | O_CREAT, 0666);
+  fd = open(MP3_IMAGE, O_WRONLY | O_CREAT, 0666);
   if (fd < 0) {
     printf("Couldn't create file descriptor\n");
     return -1;
@@ -49,7 +45,7 @@ int jpeg_writer(uint8_t *data, int buff_size) {
 
   /* close the fd file and print output message */
   close(fd);
-  printf("JPEG file written to %s\n", image_filename);
+  printf("JPEG file written to %s\n", MP3_IMAGE);
 
   return 0;
 }

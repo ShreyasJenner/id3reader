@@ -190,9 +190,11 @@ void id3_View(char *filename) {
         choice = fgetc(stdin);
       }
       if (choice < tag->frame_no) {
-        /* check if current tag stores jpeg data */
-        jpeg_writer(tag->frame_arr[choice]->data,
-                    tag->frame_arr[choice]->hdr->frame_size);
+        /* write jpeg image */
+        if (jpeg_writer(tag->frame_arr[choice]->data,
+                        tag->frame_arr[choice]->hdr->frame_size) != 0) {
+          printf("Failed to write jpeg image\n");
+        }
       } else {
         printf("Out of range\n");
       }
