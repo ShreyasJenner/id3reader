@@ -1,5 +1,6 @@
 #include "flac/read_flac_metadata.h"
 #include "images/jpeg.h"
+#include "log.h"
 #include "mp3/frame_reader.h"
 #include "mp3/id3_free.h"
 #include "mp3/id3_structs.h"
@@ -9,11 +10,9 @@
 
 /* Driver Tag */
 int main(int argc, char **argv) {
-  /* Declaration */
-
   /* check if file arg passed */
-  if (argc != 2) {
-    fprintf(stderr, "Correct number of arguments not passed\n");
+  if (argc < 2) {
+    logerror(__FILE__, __LINE__, __func__, "Argument missing");
     exit(1);
   }
 

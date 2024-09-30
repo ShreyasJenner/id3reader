@@ -1,8 +1,11 @@
 #include "flac/flac_structs.h"
 #include "flac/read_flac_metadata.h"
+#include "log.h"
 #include "stdheader.h"
 
-/* Function checks if the passed file is a flac file */
+/* Function checks if the passed file is a flac file
+ * Returns 1 on success
+ * Returns 0 on failure */
 int flac_check(char *filename) {
   /* Declaration */
   int fd;
@@ -11,8 +14,8 @@ int flac_check(char *filename) {
   /* Open file */
   fd = open(filename, O_RDONLY);
   if (fd < 0) {
-    fprintf(stderr, "Error opening file");
-    return -1;
+    logerror(__FILE__, __LINE__, __func__, "Failed to open file descriptor");
+    return 0;
   }
 
   /* set file descriptor to start of file */
@@ -34,7 +37,8 @@ FLACMetadata *allocate_FLACMetadataSpace() {
   /* Allocate space for the metadata struct */
   metadata = malloc(sizeof(FLACMetadata));
   if (metadata == NULL) {
-    fprintf(stderr, "Error creating metadata struct");
+    logerror(__FILE__, __LINE__, __func__,
+             "Error allocating space for metadata struct");
     return NULL;
   }
 
@@ -98,21 +102,24 @@ FLACMetadata *get_FLACMetadata(char *filename) {
 
   itr = FLAC__metadata_simple_iterator_new();
   if (itr == NULL) {
-    fprintf(stderr, "Error creating flac metadata iterator\n");
+    logerror(__FILE__, __LINE__, __func__,
+             "Error creating flac metadata simple iterator");
     return NULL;
   }
 
   /* allocate space ofr flac metadata */
   metadata = allocate_FLACMetadataSpace();
   if (metadata == NULL) {
-    fprintf(stderr, "Error -> allocate_FLACMetadataSpace");
+    logerror(__FILE__, __LINE__, __func__,
+             "Error allocating FLACMetadata space");
     return NULL;
   }
 
   /* open the flac file */
   if (FLAC__metadata_simple_iterator_init(itr, filename, true, false) ==
       false) {
-    fprintf(stderr, "Error creating flac metadata iterator\n");
+    logerror(__FILE__, __LINE__, __func__,
+             "Error creating flac metada iterator");
     return NULL;
   }
 
@@ -171,7 +178,7 @@ void view_FLACMetadata(char *filename) {
   /* get the flac metadata */
   metadata = get_FLACMetadata(filename);
   if (metadata == NULL) {
-    fprintf(stderr, "Error getting flac metadata\n");
+    logerror(__FILE__, __LINE__, __func__, "Error getting flac metadata");
     return;
   }
 
@@ -331,7 +338,8 @@ void view_FLACMetadata(char *filename) {
         printf("Attempting to write image to %s\n", FLAC_IMAGE);
         int image_fd = open(FLAC_IMAGE, O_WRONLY | O_CREAT, 0666);
         if (image_fd < 0) {
-          fprintf(stderr, "Unable to open file\n");
+          logerror(__FILE__, __LINE__, __func__,
+                   "Failed to create file descriptor");
           clean_FLACMetadata(metadata);
           return;
         }

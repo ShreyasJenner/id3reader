@@ -1,9 +1,11 @@
 #include "images/jpeg.h"
+#include "log.h"
 #include "stdheader.h"
 
 /* Function to get check if passed data contains jpeg data
  * Returns the starting position of the jpeg file if jpeg magic bytes are
  * identified
+ * Returns -1 on failure
  * Magic bytes for jpeg file are ff d8 ff */
 int check_JPEG(uint8_t *data, int buffer_size) {
   /* Declaration */
@@ -31,7 +33,7 @@ int jpeg_writer(uint8_t *data, int buff_size) {
   // open fd for writing image file
   fd = open(MP3_IMAGE, O_WRONLY | O_CREAT, 0666);
   if (fd < 0) {
-    printf("Couldn't create file descriptor\n");
+    logerror(__FILE__, __LINE__, __func__, "Failed to create file descriptor");
     return -1;
   }
 

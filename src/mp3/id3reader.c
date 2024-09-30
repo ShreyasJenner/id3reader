@@ -1,5 +1,6 @@
 #include "mp3/id3reader.h"
 #include "images/jpeg.h"
+#include "log.h"
 #include "mp3/frame_reader.h"
 #include "mp3/id3_free.h"
 #include "mp3/id3_structs.h"
@@ -10,6 +11,8 @@
  * Function is passed a file descriptor
  * Checks if file contains id3 tag
  * Restores position of file pointer after reading
+ * Returns 1 on success
+ * Returns 0 on failure
  */
 int id3_tagcheck(char *filename) {
   /* Declaration */
@@ -99,7 +102,7 @@ ID3Tag *get_id3tag(char *filename) {
   /* open file */
   fd = open(filename, O_RDONLY);
   if (fd < 0) {
-    fprintf(stderr, "Error opening file\n");
+    logerror(__FILE__, __LINE__, __func__, "Error opening file");
     return NULL;
   }
 
@@ -136,7 +139,7 @@ void id3_View(char *filename) {
   /* get the id3 tag and store it */
   tag = get_id3tag(filename);
   if (tag == NULL) {
-    fprintf(stderr, "No id3 data\n");
+    logerror(__FILE__, __LINE__, __func__, "No ID3 Data");
     exit(1);
   }
 
@@ -191,9 +194,13 @@ void id3_View(char *filename) {
       }
       if (choice < tag->frame_no) {
         /* write jpeg image */
-        if (jpeg_writer(tag->frame_arr[choice]->data,
-                        tag->frame_arr[choice]->hdr->frame_size) != 0) {
-          printf("Failed to write jpeg image\n");
+        if (check_JPEG(tag->frame_arr[choice]->data,
+                       tag->frame_arr[choice]->hdr->frame_size) == -1) {
+          printf("Not JPEG file\n");
+        } else {
+
+          jpeg_writer(tag->frame_arr[choice]->data,
+                      tag->frame_arr[choice]->hdr->frame_size);
         }
       } else {
         printf("Out of range\n");
