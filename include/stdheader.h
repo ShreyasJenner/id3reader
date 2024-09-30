@@ -1,5 +1,5 @@
-#ifndef STDHEADER_H
-#define STDHEADER_H
+#ifndef AUDIO_METADATA_READER_STDHEADER_H
+#define AUDIO_METADATA_READER_STDHEADER_H
 
 #include <FLAC/format.h>
 #include <FLAC/metadata.h>
@@ -13,4 +13,4 @@
 #include <time.h>
 #include <unistd.h>
 
-#endif // !STDHEADER_H
+#endif // !AUDIO_METADATA_READER_STDHEADER_H
