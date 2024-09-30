@@ -23,7 +23,7 @@ int main(int argc, char **argv) {
     id3_View(argv[1]);
   } else if (flac_check(argv[1])) {
     printf("Flac file identified\n");
-    read_flac(argv[1]);
+    view_FLACMetadata(argv[1]);
   } else {
     printf("Unkown file format\n");
   }
