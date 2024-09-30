@@ -4,4 +4,5 @@
 Project to read the metadata from audio files
 
 Currently supports:
-- mp3
+- MP3
+- FLAC 
