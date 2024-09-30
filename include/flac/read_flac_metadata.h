@@ -4,6 +4,7 @@
 #define FLAC_IMAGE "/tmp/flacimage.img"
 
 #include "flac/flac_structs.h"
+#include "stdheader.h"
 
 int flac_check(char *filename);
 
