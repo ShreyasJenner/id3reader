@@ -68,7 +68,6 @@ void store_FLACMetadata(FLACMetadata *metadata, FLAC__MetadataType metatype,
   if (metatype == 0) {
     /* Stream info */
     metadata->streaminfo = streammetadata;
-    printf("stream meta info stored\n");
   } else if (metatype == 1) { /* Padding */
     metadata->padding = streammetadata;
   } else if (metatype == 2) {
