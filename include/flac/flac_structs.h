@@ -1,6 +1,7 @@
 #ifndef FLAC_STRUCTS_H
 #define FLAC_STRUCTS_H
 
+// global
 #include "stdheader.h"
 
 typedef struct flac_metadata FLACMetadata;

@@ -1,8 +1,10 @@
 #ifndef FRAME_READER_H
 #define FRAME_READER_H
 
-#include "id3_structs.h"
+// global
 #include "stdheader.h"
+// local
+#include "id3_structs.h"
 
 int id3_framecheck(int fd);
 
