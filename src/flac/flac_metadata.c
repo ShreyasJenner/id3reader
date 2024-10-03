@@ -138,29 +138,31 @@ FLACMetadata *get_FLACMetadata(char *filename) {
 }
 
 void clean_FLACMetadata(FLACMetadata *metadata) {
-  if (metadata->picture != NULL) {
-    FLAC__metadata_object_delete(metadata->picture);
-  }
-  if (metadata->cue_sheet != NULL) {
-    FLAC__metadata_object_delete(metadata->cue_sheet);
-  }
-  if (metadata->vorbis_comment != NULL) {
-    FLAC__metadata_object_delete(metadata->vorbis_comment);
-  }
-  if (metadata->seektable != NULL) {
-    FLAC__metadata_object_delete(metadata->seektable);
-  }
-  if (metadata->app != NULL) {
-    FLAC__metadata_object_delete(metadata->app);
-  }
-  if (metadata->padding != NULL) {
-    FLAC__metadata_object_delete(metadata->padding);
-  }
-  if (metadata->streaminfo != NULL) {
-    FLAC__metadata_object_delete(metadata->streaminfo);
-  }
+  if (metadata != NULL) {
+    if (metadata->picture != NULL) {
+      FLAC__metadata_object_delete(metadata->picture);
+    }
+    if (metadata->cue_sheet != NULL) {
+      FLAC__metadata_object_delete(metadata->cue_sheet);
+    }
+    if (metadata->vorbis_comment != NULL) {
+      FLAC__metadata_object_delete(metadata->vorbis_comment);
+    }
+    if (metadata->seektable != NULL) {
+      FLAC__metadata_object_delete(metadata->seektable);
+    }
+    if (metadata->app != NULL) {
+      FLAC__metadata_object_delete(metadata->app);
+    }
+    if (metadata->padding != NULL) {
+      FLAC__metadata_object_delete(metadata->padding);
+    }
+    if (metadata->streaminfo != NULL) {
+      FLAC__metadata_object_delete(metadata->streaminfo);
+    }
 
-  free(metadata);
+    free(metadata);
+  }
 }
 
 /* Function to view flac metadata in file
